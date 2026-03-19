@@ -25,16 +25,15 @@
 /* === Overlay approach: #app stays in place, AIOS elements positioned around it === */
 
 /* When AIOS is active, shrink WhatsApp's #app to make room */
-body.aios-active #app,
-body.aios-active #app .app-wrapper-web,
-body.aios-active #app .app-wrapper-web > div,
-body.aios-active #app ._app {
+body.aios-active #app {
+  position: fixed !important;
   top: var(--aios-topbar-height) !important;
   right: var(--aios-sidebar-width) !important;
   left: var(--aios-ai-panel-width) !important;
   bottom: 0 !important;
   width: auto !important;
   height: auto !important;
+  z-index: 1 !important;
 }
 
 /* AIOS root is a non-blocking overlay - pointer-events only on AIOS elements */
@@ -1256,9 +1255,7 @@ kbd {
   #aios-ai-panel {
     display: none !important;
   }
-  body.aios-active #app,
-  body.aios-active #app .app-wrapper-web,
-  body.aios-active #app .app-wrapper-web > div {
+  body.aios-active #app {
     left: 0 !important;
   }
   #aios-topbar {
