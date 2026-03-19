@@ -247,20 +247,41 @@
   display: flex;
   overflow: hidden;
   min-width: 0;
+  position: relative;
+  /* Creates a new containing block so fixed-position children stay inside */
+  transform: translateZ(0);
 }
 
 #aios-whatsapp-container #app {
-  width: 100%;
-  height: 100%;
+  width: 100% !important;
+  height: 100% !important;
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
 }
 
 /* Reset WhatsApp's own positioning */
 #aios-whatsapp-container .app-wrapper-web,
 #aios-whatsapp-container .two,
-#aios-whatsapp-container ._app {
+#aios-whatsapp-container ._app,
+#aios-whatsapp-container .app-wrapper-web > div {
   height: 100% !important;
+  width: 100% !important;
   min-height: unset !important;
   max-height: unset !important;
+  min-width: unset !important;
+  max-width: unset !important;
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
 }
 
 /* --- AI Panel (Right Side) --- */

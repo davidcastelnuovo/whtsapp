@@ -3,13 +3,21 @@
  * Initializes the AIOS system on WhatsApp Web
  */
 (async function initAIOS() {
-  console.log('[AIOS] Initializing WhatsApp AIOS...');
+  console.log('[AIOS] Initializing WhatsApp AIOS v1.0.0...');
+  console.log('[AIOS] URL:', location.href);
+  console.log('[AIOS] AIOS object keys:', Object.keys(window.AIOS || {}));
+
+  // Prevent double init
+  if (document.getElementById('aios-root')) {
+    console.log('[AIOS] Already initialized, skipping');
+    return;
+  }
 
   // Show loading indicator immediately
   const loader = document.createElement('div');
   loader.id = 'aios-loader';
   loader.style.cssText = `
-    position: fixed; bottom: 20px; left: 20px; z-index: 999999;
+    position: fixed; bottom: 20px; left: 20px; z-index: 9999999;
     background: #202c33; color: #e9edef; padding: 12px 20px;
     border-radius: 10px; font-family: sans-serif; font-size: 14px;
     direction: rtl; box-shadow: 0 4px 12px rgba(0,0,0,0.4);
@@ -23,11 +31,21 @@
   document.body.appendChild(loader);
 
   try {
-    // Wait for WhatsApp's #app element
-    await AIOS.utils.waitForElement('#app', 20000);
-    console.log('[AIOS] Found #app element');
+    // Check that all AIOS modules are loaded
+    const requiredModules = ['utils', 'storage', 'claude', 'reader', 'actions', 'observer', 'sidebar', 'dashboard', 'aiPanel'];
+    const missingModules = requiredModules.filter(m => !AIOS[m]);
+    if (missingModules.length > 0) {
+      console.error('[AIOS] Missing modules:', missingModules);
+      throw new Error(`מודולים חסרים: ${missingModules.join(', ')}`);
+    }
+    console.log('[AIOS] All modules loaded');
 
-    // Try multiple selectors for chat list (WhatsApp changes these frequently)
+    // Wait for WhatsApp's #app element
+    console.log('[AIOS] Waiting for #app element...');
+    const appEl = await AIOS.utils.waitForElement('#app', 30000);
+    console.log('[AIOS] Found #app element:', appEl.tagName, appEl.className);
+
+    // Wait for WhatsApp to fully render (any of these selectors)
     const chatListSelectors = [
       '[data-testid="chat-list"]',
       '[data-testid="chatlist-header"]',
@@ -35,18 +53,23 @@
       '[aria-label="רשימת צ\'אטים"]',
       '#pane-side',
       '[data-testid="panel-list"]',
-      'div[tabindex] > div > div > div[aria-label]'
+      'div[tabindex] > div > div > div[aria-label]',
+      // Additional fallback selectors
+      'header',
+      '[data-testid="default-user"]',
+      '[data-testid="menu-bar-icon"]'
     ];
 
-    let chatListFound = false;
     try {
-      await AIOS.utils.waitForAnyElement(chatListSelectors, 20000);
-      chatListFound = true;
-      console.log('[AIOS] WhatsApp chat list detected');
+      console.log('[AIOS] Waiting for WhatsApp UI...');
+      await AIOS.utils.waitForAnyElement(chatListSelectors, 25000);
+      console.log('[AIOS] WhatsApp UI detected');
     } catch (e) {
-      console.warn('[AIOS] Chat list selectors not found, proceeding anyway...', e.message);
-      // Still proceed - WhatsApp is loaded (#app exists), selectors just changed
+      console.warn('[AIOS] WhatsApp UI selectors not matched, proceeding anyway...');
     }
+
+    // Small delay to ensure WhatsApp rendering is complete
+    await new Promise(resolve => setTimeout(resolve, 1500));
 
     // Remove loader
     loader.remove();
@@ -55,6 +78,10 @@
 
     // Initialize the dashboard (full takeover)
     AIOS.dashboard.init();
+    console.log('[AIOS] Dashboard init done, checking DOM...');
+    console.log('[AIOS] aios-root exists:', !!document.getElementById('aios-root'));
+    console.log('[AIOS] aios-sidebar exists:', !!document.getElementById('aios-sidebar'));
+    console.log('[AIOS] aios-topbar exists:', !!document.getElementById('aios-topbar'));
 
     // Initialize WhatsApp reader
     AIOS.reader.init();
@@ -79,6 +106,7 @@
     console.log('[AIOS] System ready!');
   } catch (error) {
     console.error('[AIOS] Failed to initialize:', error);
+    console.error('[AIOS] Stack:', error.stack);
 
     // Show visible error to user instead of silent failure
     loader.innerHTML = `

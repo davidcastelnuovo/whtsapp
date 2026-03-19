@@ -16,12 +16,7 @@ AIOS.dashboard = {
       console.error('[AIOS] Could not find WhatsApp #app element');
       return;
     }
-
-    const appParent = app.parentElement;
-    if (!appParent) {
-      console.error('[AIOS] #app has no parent element');
-      return;
-    }
+    console.log('[AIOS] Found #app:', app.tagName, 'parent:', app.parentElement?.tagName);
 
     // Prevent double initialization
     if (document.getElementById('aios-root')) {
@@ -43,9 +38,6 @@ AIOS.dashboard = {
     // WhatsApp container (contains original WhatsApp UI)
     const waContainer = document.createElement('div');
     waContainer.id = 'aios-whatsapp-container';
-
-    // Move WhatsApp app into our container
-    waContainer.appendChild(app);
 
     // AI side panel (right side)
     const aiPanel = document.createElement('div');
@@ -72,8 +64,28 @@ AIOS.dashboard = {
     root.appendChild(sidebar);
     root.appendChild(mainArea);
 
-    // Insert into page
-    appParent.appendChild(root);
+    // Insert AIOS root into body FIRST (before moving app)
+    document.body.appendChild(root);
+
+    // Now move WhatsApp app into our container
+    waContainer.appendChild(app);
+
+    // Force-reset any computed styles on #app that might cause it to escape
+    app.style.setProperty('position', 'relative', 'important');
+    app.style.setProperty('width', '100%', 'important');
+    app.style.setProperty('height', '100%', 'important');
+    app.style.setProperty('top', 'auto', 'important');
+    app.style.setProperty('left', 'auto', 'important');
+    app.style.setProperty('right', 'auto', 'important');
+    app.style.setProperty('bottom', 'auto', 'important');
+
+    // Also fix any wrapper elements inside #app
+    const appWrapper = app.querySelector('.app-wrapper-web') || app.firstElementChild;
+    if (appWrapper) {
+      appWrapper.style.setProperty('position', 'relative', 'important');
+      appWrapper.style.setProperty('height', '100%', 'important');
+      appWrapper.style.setProperty('min-height', '0', 'important');
+    }
 
     // Command palette
     this._createCommandPalette(root);
@@ -82,6 +94,8 @@ AIOS.dashboard = {
     this._createTopBar(mainArea);
 
     console.log('[AIOS] Layout created successfully');
+    console.log('[AIOS] Root children:', root.children.length);
+    console.log('[AIOS] WhatsApp container has app:', waContainer.contains(app));
   },
 
   _createTopBar(parent) {
