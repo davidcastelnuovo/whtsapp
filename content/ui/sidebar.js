@@ -66,45 +66,52 @@ AIOS.sidebar = {
       btn.classList.toggle('active', btn.dataset.view === viewId);
     });
 
-    // Show/hide panels
-    const whatsappPanel = document.getElementById('aios-whatsapp-container');
+    // Elements
+    const app = document.getElementById('app');
     const aiPanel = document.getElementById('aios-ai-panel');
     const mainContent = document.getElementById('aios-main-content');
 
-    // Reset all panels
-    if (whatsappPanel) whatsappPanel.style.display = 'none';
+    // Reset
     if (aiPanel) aiPanel.style.display = 'none';
     if (mainContent) mainContent.innerHTML = '';
+    if (mainContent) mainContent.style.display = 'none';
+    if (app) app.style.display = '';
 
     switch (viewId) {
       case 'chats':
-        if (whatsappPanel) whatsappPanel.style.display = 'flex';
         if (aiPanel) aiPanel.style.display = 'flex';
         break;
       case 'ai':
-        if (whatsappPanel) whatsappPanel.style.display = 'flex';
         if (aiPanel) aiPanel.style.display = 'flex';
         if (AIOS.aiPanel) AIOS.aiPanel.focus();
         break;
       case 'automation':
+        if (app) app.style.display = 'none';
+        if (aiPanel) aiPanel.style.display = 'none';
         if (mainContent) {
           mainContent.style.display = 'flex';
           if (AIOS.automationPanel) AIOS.automationPanel.render(mainContent);
         }
         break;
       case 'analytics':
+        if (app) app.style.display = 'none';
+        if (aiPanel) aiPanel.style.display = 'none';
         if (mainContent) {
           mainContent.style.display = 'flex';
           if (AIOS.analyticsPanel) AIOS.analyticsPanel.render(mainContent);
         }
         break;
       case 'tasks':
+        if (app) app.style.display = 'none';
+        if (aiPanel) aiPanel.style.display = 'none';
         if (mainContent) {
           mainContent.style.display = 'flex';
           if (AIOS.tasksPanel) AIOS.tasksPanel.render(mainContent);
         }
         break;
       case 'settings':
+        if (app) app.style.display = 'none';
+        if (aiPanel) aiPanel.style.display = 'none';
         if (mainContent) {
           mainContent.style.display = 'flex';
           if (AIOS.settingsPanel) AIOS.settingsPanel.render(mainContent);

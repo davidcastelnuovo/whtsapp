@@ -10,13 +10,11 @@ AIOS.dashboard = {
   },
 
   _createLayout() {
-    // Try multiple ways to find WhatsApp's root element
     const app = document.getElementById('app') || document.querySelector('[id="app"]');
     if (!app) {
       console.error('[AIOS] Could not find WhatsApp #app element');
       return;
     }
-    console.log('[AIOS] Found #app:', app.tagName, 'parent:', app.parentElement?.tagName);
 
     // Prevent double initialization
     if (document.getElementById('aios-root')) {
@@ -24,83 +22,55 @@ AIOS.dashboard = {
       return;
     }
 
-    // Create AIOS root wrapper
+    // === NEW APPROACH: Don't move #app. Instead, shrink it via CSS ===
+    // === and overlay AIOS panels around it. ===
+
+    // Mark body so CSS can apply layout adjustments
+    document.body.classList.add('aios-active');
+
+    // Shrink WhatsApp's #app to make room for sidebar (right), topbar (top), AI panel (left)
+    app.classList.add('aios-whatsapp-adjusted');
+
+    // Create AIOS overlay root (does NOT contain #app)
     const root = document.createElement('div');
     root.id = 'aios-root';
 
     // Create sidebar
     const sidebar = AIOS.sidebar.render();
+    root.appendChild(sidebar);
 
-    // Create main area
-    const mainArea = document.createElement('div');
-    mainArea.id = 'aios-main-area';
+    // Create topbar
+    const topbar = document.createElement('div');
+    topbar.id = 'aios-topbar';
+    root.appendChild(topbar);
 
-    // WhatsApp container (contains original WhatsApp UI)
-    const waContainer = document.createElement('div');
-    waContainer.id = 'aios-whatsapp-container';
-
-    // AI side panel (right side)
+    // Create AI panel
     const aiPanel = document.createElement('div');
     aiPanel.id = 'aios-ai-panel';
     if (AIOS.aiPanel) {
       aiPanel.appendChild(AIOS.aiPanel.render());
     }
+    root.appendChild(aiPanel);
 
-    // Main content area (for non-chat views)
+    // Main content area (for non-chat views like automation, analytics, etc.)
     const mainContent = document.createElement('div');
     mainContent.id = 'aios-main-content';
     mainContent.style.display = 'none';
+    root.appendChild(mainContent);
 
-    // Create content row (horizontal layout for panels below topbar)
-    const contentRow = document.createElement('div');
-    contentRow.id = 'aios-content-row';
-    contentRow.appendChild(waContainer);
-    contentRow.appendChild(aiPanel);
-    contentRow.appendChild(mainContent);
-
-    // Assemble layout
-    mainArea.appendChild(contentRow);
-
-    root.appendChild(sidebar);
-    root.appendChild(mainArea);
-
-    // Insert AIOS root into body FIRST (before moving app)
+    // Insert into page
     document.body.appendChild(root);
-
-    // Now move WhatsApp app into our container
-    waContainer.appendChild(app);
-
-    // Force-reset any computed styles on #app that might cause it to escape
-    app.style.setProperty('position', 'relative', 'important');
-    app.style.setProperty('width', '100%', 'important');
-    app.style.setProperty('height', '100%', 'important');
-    app.style.setProperty('top', 'auto', 'important');
-    app.style.setProperty('left', 'auto', 'important');
-    app.style.setProperty('right', 'auto', 'important');
-    app.style.setProperty('bottom', 'auto', 'important');
-
-    // Also fix any wrapper elements inside #app
-    const appWrapper = app.querySelector('.app-wrapper-web') || app.firstElementChild;
-    if (appWrapper) {
-      appWrapper.style.setProperty('position', 'relative', 'important');
-      appWrapper.style.setProperty('height', '100%', 'important');
-      appWrapper.style.setProperty('min-height', '0', 'important');
-    }
 
     // Command palette
     this._createCommandPalette(root);
 
-    // Top bar with quick stats
-    this._createTopBar(mainArea);
+    // Fill topbar content
+    this._fillTopBar(topbar);
 
-    console.log('[AIOS] Layout created successfully');
-    console.log('[AIOS] Root children:', root.children.length);
-    console.log('[AIOS] WhatsApp container has app:', waContainer.contains(app));
+    console.log('[AIOS] Layout created (overlay approach, #app not moved)');
   },
 
-  _createTopBar(parent) {
-    const topBar = document.createElement('div');
-    topBar.id = 'aios-topbar';
+  _fillTopBar(topBar) {
     topBar.innerHTML = `
       <div class="aios-topbar-right">
         <div class="aios-quick-stat">
@@ -122,7 +92,6 @@ AIOS.dashboard = {
         </button>
       </div>
     `;
-    parent.insertBefore(topBar, parent.firstChild);
 
     // Update stats periodically
     this._updateStats();
