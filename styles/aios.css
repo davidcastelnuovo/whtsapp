@@ -1,0 +1,1257 @@
+/* ============================================
+   WhatsApp AIOS - Complete Stylesheet
+   Dark theme, RTL, Full Takeover Layout
+   ============================================ */
+
+/* --- CSS Variables --- */
+:root {
+  --aios-bg-primary: #111b21;
+  --aios-bg-secondary: #202c33;
+  --aios-bg-tertiary: #2a3942;
+  --aios-bg-hover: #3b4a54;
+  --aios-text-primary: #e9edef;
+  --aios-text-secondary: #8696a0;
+  --aios-accent: #00a884;
+  --aios-accent-hover: #06cf9c;
+  --aios-border: #2a3942;
+  --aios-danger: #ea4335;
+  --aios-sidebar-width: 72px;
+  --aios-ai-panel-width: 380px;
+  --aios-topbar-height: 48px;
+  --aios-radius: 10px;
+  --aios-transition: 0.2s ease;
+}
+
+/* --- Full Takeover Layout --- */
+#aios-root {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  direction: rtl;
+  background: var(--aios-bg-primary);
+  z-index: 99999;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* --- Sidebar --- */
+#aios-sidebar {
+  width: var(--aios-sidebar-width);
+  background: var(--aios-bg-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 0;
+  border-left: 1px solid var(--aios-border);
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.aios-sidebar-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--aios-border);
+  width: 100%;
+}
+
+.aios-logo-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--aios-accent), #25d366);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--aios-bg-primary);
+  margin-bottom: 4px;
+}
+
+.aios-logo-text {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--aios-text-secondary);
+  letter-spacing: 1px;
+}
+
+.aios-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.aios-nav-btn {
+  width: 52px;
+  height: 52px;
+  border: none;
+  background: transparent;
+  border-radius: 14px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  transition: background var(--aios-transition);
+  position: relative;
+}
+
+.aios-nav-btn:hover {
+  background: var(--aios-bg-tertiary);
+}
+
+.aios-nav-btn.active {
+  background: var(--aios-bg-tertiary);
+}
+
+.aios-nav-btn.active::before {
+  content: '';
+  position: absolute;
+  right: -1px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 24px;
+  background: var(--aios-accent);
+  border-radius: 3px 0 0 3px;
+}
+
+.aios-nav-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.aios-nav-label {
+  font-size: 9px;
+  color: var(--aios-text-secondary);
+  white-space: nowrap;
+}
+
+.aios-nav-btn.active .aios-nav-label {
+  color: var(--aios-accent);
+}
+
+.aios-sidebar-bottom {
+  padding-top: 12px;
+  border-top: 1px solid var(--aios-border);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.aios-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 8px;
+  color: var(--aios-text-secondary);
+}
+
+.aios-status-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--aios-accent);
+  border-radius: 50%;
+  animation: aios-pulse 2s infinite;
+}
+
+@keyframes aios-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* --- Main Area --- */
+#aios-main-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* --- Top Bar --- */
+#aios-topbar {
+  height: var(--aios-topbar-height);
+  background: var(--aios-bg-secondary);
+  border-bottom: 1px solid var(--aios-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  flex-shrink: 0;
+}
+
+.aios-topbar-right {
+  display: flex;
+  gap: 24px;
+}
+
+.aios-quick-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.aios-stat-label {
+  font-size: 11px;
+  color: var(--aios-text-secondary);
+}
+
+.aios-stat-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--aios-accent);
+  min-width: 20px;
+  text-align: center;
+}
+
+.aios-cmd-trigger {
+  background: var(--aios-bg-tertiary);
+  border: 1px solid var(--aios-border);
+  color: var(--aios-text-secondary);
+  padding: 6px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all var(--aios-transition);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.aios-cmd-trigger:hover {
+  border-color: var(--aios-accent);
+  color: var(--aios-text-primary);
+}
+
+/* --- WhatsApp Container --- */
+#aios-whatsapp-container {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  min-width: 0;
+}
+
+#aios-whatsapp-container #app {
+  width: 100%;
+  height: 100%;
+}
+
+/* Reset WhatsApp's own positioning */
+#aios-whatsapp-container .app-wrapper-web,
+#aios-whatsapp-container .two,
+#aios-whatsapp-container ._app {
+  height: 100% !important;
+  min-height: unset !important;
+  max-height: unset !important;
+}
+
+/* --- AI Panel (Right Side) --- */
+#aios-ai-panel {
+  width: var(--aios-ai-panel-width);
+  background: var(--aios-bg-secondary);
+  border-right: 1px solid var(--aios-border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.aios-ai-panel-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.aios-ai-header {
+  padding: 16px;
+  border-bottom: 1px solid var(--aios-border);
+}
+
+.aios-ai-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--aios-text-primary);
+  margin-bottom: 4px;
+}
+
+.aios-ai-icon {
+  font-size: 20px;
+}
+
+.aios-ai-context {
+  font-size: 12px;
+  color: var(--aios-text-secondary);
+}
+
+.aios-ai-context.active {
+  color: var(--aios-accent);
+}
+
+/* Quick Actions */
+.aios-ai-quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--aios-border);
+}
+
+.aios-quick-btn {
+  background: var(--aios-bg-tertiary);
+  border: 1px solid var(--aios-border);
+  color: var(--aios-text-primary);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all var(--aios-transition);
+  white-space: nowrap;
+}
+
+.aios-quick-btn:hover {
+  background: var(--aios-bg-hover);
+  border-color: var(--aios-accent);
+}
+
+/* Messages Area */
+.aios-ai-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.aios-ai-welcome {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--aios-text-secondary);
+}
+
+.aios-ai-welcome-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.aios-ai-welcome h3 {
+  color: var(--aios-text-primary);
+  margin-bottom: 8px;
+}
+
+.aios-ai-welcome p {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.aios-ai-msg {
+  display: flex;
+  gap: 8px;
+}
+
+.aios-ai-msg-user {
+  justify-content: flex-start;
+}
+
+.aios-ai-msg-user .aios-ai-msg-content {
+  background: var(--aios-accent);
+  color: var(--aios-bg-primary);
+  border-radius: 12px 12px 4px 12px;
+  max-width: 85%;
+}
+
+.aios-ai-msg-ai {
+  justify-content: flex-end;
+}
+
+.aios-ai-msg-ai .aios-ai-msg-content {
+  background: var(--aios-bg-tertiary);
+  color: var(--aios-text-primary);
+  border-radius: 12px 12px 12px 4px;
+  max-width: 85%;
+}
+
+.aios-ai-msg-content {
+  padding: 10px 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.aios-ai-msg-avatar {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.aios-error {
+  color: var(--aios-danger) !important;
+  background: rgba(234, 67, 53, 0.1) !important;
+}
+
+.aios-system {
+  color: var(--aios-text-secondary) !important;
+  background: transparent !important;
+  text-align: center;
+  font-size: 12px !important;
+}
+
+/* Typing Indicator */
+.aios-typing-indicator {
+  display: flex;
+  gap: 4px;
+  padding: 4px 0;
+}
+
+.aios-typing-indicator span {
+  width: 8px;
+  height: 8px;
+  background: var(--aios-text-secondary);
+  border-radius: 50%;
+  animation: aios-typing 1.4s infinite;
+}
+
+.aios-typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+.aios-typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes aios-typing {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-8px); opacity: 1; }
+}
+
+/* AI Input */
+.aios-ai-input-area {
+  padding: 12px 16px;
+  border-top: 1px solid var(--aios-border);
+}
+
+.aios-ai-input-wrapper {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  background: var(--aios-bg-tertiary);
+  border-radius: 12px;
+  padding: 8px 12px;
+}
+
+.aios-ai-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--aios-text-primary);
+  font-size: 13px;
+  resize: none;
+  outline: none;
+  font-family: inherit;
+  max-height: 120px;
+  direction: rtl;
+}
+
+.aios-ai-input::placeholder {
+  color: var(--aios-text-secondary);
+}
+
+.aios-ai-send {
+  background: var(--aios-accent);
+  border: none;
+  color: var(--aios-bg-primary);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+  transition: background var(--aios-transition);
+  transform: scaleX(-1);
+}
+
+.aios-ai-send:hover {
+  background: var(--aios-accent-hover);
+}
+
+/* --- Main Content (full panels) --- */
+#aios-main-content {
+  flex: 1;
+  overflow-y: auto;
+  display: none;
+}
+
+.aios-panel-full {
+  padding: 24px;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.aios-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.aios-panel-header h2 {
+  font-size: 20px;
+  color: var(--aios-text-primary);
+}
+
+.aios-panel-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* --- Tabs --- */
+.aios-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--aios-border);
+  padding-bottom: 0;
+}
+
+.aios-tab {
+  background: transparent;
+  border: none;
+  color: var(--aios-text-secondary);
+  padding: 10px 20px;
+  font-size: 13px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all var(--aios-transition);
+}
+
+.aios-tab:hover { color: var(--aios-text-primary); }
+.aios-tab.active {
+  color: var(--aios-accent);
+  border-bottom-color: var(--aios-accent);
+}
+
+.aios-tab-content { display: none; }
+.aios-tab-content.active { display: block; }
+
+/* --- Buttons --- */
+.aios-btn-primary {
+  background: var(--aios-accent);
+  color: var(--aios-bg-primary);
+  border: none;
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--aios-transition);
+}
+.aios-btn-primary:hover { background: var(--aios-accent-hover); }
+.aios-btn-primary:disabled { background: var(--aios-bg-hover); color: var(--aios-text-secondary); cursor: not-allowed; }
+
+.aios-btn-secondary {
+  background: var(--aios-bg-tertiary);
+  color: var(--aios-text-primary);
+  border: 1px solid var(--aios-border);
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all var(--aios-transition);
+}
+.aios-btn-secondary:hover { background: var(--aios-bg-hover); }
+
+.aios-btn-danger { color: var(--aios-danger); border-color: var(--aios-danger); }
+.aios-btn-danger:hover { background: rgba(234, 67, 53, 0.1); }
+
+/* --- Section Actions --- */
+.aios-section-actions { margin-bottom: 16px; }
+
+/* --- Cards --- */
+.aios-rule-card,
+.aios-scheduled-card {
+  background: var(--aios-bg-tertiary);
+  border-radius: var(--aios-radius);
+  padding: 16px;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.aios-rule-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.aios-rule-trigger {
+  font-size: 14px;
+  color: var(--aios-text-primary);
+}
+
+.aios-rule-response {
+  font-size: 12px;
+  color: var(--aios-text-secondary);
+}
+
+.aios-rule-delete {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  opacity: 0.5;
+  transition: opacity var(--aios-transition);
+}
+.aios-rule-delete:hover { opacity: 1; }
+
+/* --- Badge --- */
+.aios-badge {
+  background: var(--aios-bg-hover);
+  color: var(--aios-text-primary);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  margin-left: 8px;
+}
+
+/* --- Toggle --- */
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+}
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle .slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--aios-bg-hover);
+  border-radius: 12px;
+  transition: 0.3s;
+}
+.toggle .slider:before {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  left: 3px;
+  bottom: 3px;
+  background: var(--aios-text-primary);
+  border-radius: 50%;
+  transition: 0.3s;
+}
+.toggle input:checked + .slider { background: var(--aios-accent); }
+.toggle input:checked + .slider:before { transform: translateX(20px); }
+
+/* --- Modal --- */
+.aios-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100000;
+}
+
+.aios-modal-content {
+  background: var(--aios-bg-secondary);
+  border-radius: 16px;
+  padding: 24px;
+  width: 420px;
+  max-width: 90vw;
+  direction: rtl;
+}
+
+.aios-modal-content h3 {
+  font-size: 18px;
+  margin-bottom: 20px;
+  color: var(--aios-text-primary);
+}
+
+.aios-modal-actions {
+  display: flex;
+  justify-content: flex-start;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+/* --- Forms --- */
+.aios-form-field {
+  margin-bottom: 16px;
+}
+
+.aios-form-field label {
+  display: block;
+  font-size: 12px;
+  color: var(--aios-text-secondary);
+  margin-bottom: 6px;
+}
+
+.aios-form-field input,
+.aios-form-field textarea,
+.aios-form-field select {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--aios-bg-tertiary);
+  border: 1px solid var(--aios-border);
+  border-radius: 8px;
+  color: var(--aios-text-primary);
+  font-size: 13px;
+  outline: none;
+  font-family: inherit;
+}
+
+.aios-form-field input:focus,
+.aios-form-field textarea:focus,
+.aios-form-field select:focus {
+  border-color: var(--aios-accent);
+}
+
+.aios-form-field textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.aios-form-field select {
+  cursor: pointer;
+}
+
+.aios-checkbox-label {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.aios-checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--aios-accent);
+}
+
+.aios-input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.aios-input-group input {
+  flex: 1;
+}
+
+/* --- Kanban --- */
+.aios-kanban {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.aios-kanban-column {
+  background: var(--aios-bg-secondary);
+  border-radius: var(--aios-radius);
+  padding: 16px;
+  min-height: 300px;
+}
+
+.aios-kanban-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--aios-text-primary);
+}
+
+.aios-kanban-count {
+  background: var(--aios-bg-tertiary);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  color: var(--aios-text-secondary);
+}
+
+.aios-task-card {
+  background: var(--aios-bg-tertiary);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+
+.aios-task-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--aios-text-primary);
+  margin-bottom: 4px;
+}
+
+.aios-task-desc {
+  font-size: 11px;
+  color: var(--aios-text-secondary);
+  margin-bottom: 8px;
+}
+
+.aios-task-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 10px;
+  color: var(--aios-text-secondary);
+  margin-bottom: 8px;
+}
+
+.aios-task-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.aios-task-move {
+  background: var(--aios-accent);
+  color: var(--aios-bg-primary);
+  border: none;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.aios-task-delete {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  opacity: 0.5;
+}
+.aios-task-delete:hover { opacity: 1; }
+
+/* --- Analytics --- */
+.aios-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.aios-stat-card {
+  background: var(--aios-bg-secondary);
+  border-radius: var(--aios-radius);
+  padding: 20px;
+  text-align: center;
+}
+
+.aios-stat-number {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--aios-accent);
+  margin-bottom: 4px;
+}
+
+.aios-stat-card .aios-stat-label {
+  font-size: 12px;
+  color: var(--aios-text-secondary);
+}
+
+.aios-analytics-section {
+  background: var(--aios-bg-secondary);
+  border-radius: var(--aios-radius);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.aios-analytics-section h3 {
+  font-size: 14px;
+  color: var(--aios-text-primary);
+  margin-bottom: 16px;
+}
+
+.aios-bar-chart { display: flex; flex-direction: column; gap: 12px; }
+
+.aios-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.aios-bar-label {
+  width: 60px;
+  font-size: 12px;
+  color: var(--aios-text-secondary);
+  text-align: left;
+}
+
+.aios-bar-container {
+  flex: 1;
+  height: 24px;
+  background: var(--aios-bg-tertiary);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.aios-bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.aios-bar.incoming { background: var(--aios-accent); }
+.aios-bar.outgoing { background: #5b72f0; }
+
+.aios-bar-value {
+  width: 40px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--aios-text-primary);
+}
+
+.aios-top-list { display: flex; flex-direction: column; gap: 8px; }
+
+.aios-top-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--aios-border);
+}
+
+.aios-top-item:last-child { border-bottom: none; }
+
+.aios-top-rank {
+  width: 24px;
+  height: 24px;
+  background: var(--aios-bg-tertiary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: var(--aios-text-secondary);
+}
+
+.aios-top-name {
+  flex: 1;
+  font-size: 13px;
+  color: var(--aios-text-primary);
+}
+
+.aios-top-count {
+  font-size: 12px;
+  color: var(--aios-accent);
+}
+
+.aios-word-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  padding: 16px 0;
+}
+
+.aios-word {
+  color: var(--aios-accent);
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: rgba(0, 168, 132, 0.1);
+  transition: all var(--aios-transition);
+  cursor: default;
+}
+
+.aios-word:hover {
+  background: rgba(0, 168, 132, 0.2);
+  transform: scale(1.1);
+}
+
+.aios-analysis-result {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--aios-text-primary);
+}
+
+/* --- Settings --- */
+.aios-settings-section {
+  background: var(--aios-bg-secondary);
+  border-radius: var(--aios-radius);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.aios-settings-section h3 {
+  font-size: 14px;
+  color: var(--aios-accent);
+  margin-bottom: 16px;
+}
+
+.aios-setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--aios-border);
+}
+.aios-setting-row:last-child { border-bottom: none; }
+
+.aios-setting-label {
+  font-size: 14px;
+  color: var(--aios-text-primary);
+}
+
+.aios-setting-desc {
+  font-size: 11px;
+  color: var(--aios-text-secondary);
+  margin-top: 2px;
+}
+
+.aios-settings-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.aios-shortcut-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.aios-shortcut-row span {
+  font-size: 13px;
+  color: var(--aios-text-primary);
+}
+
+kbd {
+  background: var(--aios-bg-tertiary);
+  border: 1px solid var(--aios-border);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--aios-text-secondary);
+  font-family: monospace;
+}
+
+.aios-settings-footer {
+  text-align: center;
+  padding: 24px;
+  color: var(--aios-text-secondary);
+  font-size: 12px;
+}
+
+.aios-settings-credit {
+  color: var(--aios-accent);
+  margin-top: 4px;
+}
+
+.aios-msg {
+  font-size: 12px;
+  margin-right: 12px;
+}
+
+/* --- Scheduled Cards --- */
+.aios-scheduled-card {
+  position: relative;
+}
+
+.aios-scheduled-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.aios-scheduled-contact {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--aios-text-primary);
+}
+
+.aios-scheduled-text {
+  font-size: 12px;
+  color: var(--aios-text-secondary);
+}
+
+.aios-scheduled-time {
+  font-size: 11px;
+  color: var(--aios-text-secondary);
+}
+
+.aios-scheduled-status {
+  position: absolute;
+  top: 16px;
+  left: 40px;
+  font-size: 12px;
+}
+
+.aios-scheduled-card.sent {
+  opacity: 0.5;
+}
+
+/* --- Category Items --- */
+.aios-category-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--aios-border);
+}
+
+.aios-category-item:last-child { border-bottom: none; }
+
+.aios-category-name {
+  font-size: 13px;
+  color: var(--aios-text-primary);
+}
+
+/* --- Command Palette --- */
+#aios-command-palette {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 200000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 15vh;
+}
+
+.aios-cmd-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.aios-cmd-dialog {
+  position: relative;
+  width: 500px;
+  max-width: 90vw;
+  background: var(--aios-bg-secondary);
+  border-radius: 16px;
+  border: 1px solid var(--aios-border);
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.aios-cmd-input {
+  width: 100%;
+  padding: 16px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--aios-border);
+  color: var(--aios-text-primary);
+  font-size: 16px;
+  outline: none;
+  direction: rtl;
+}
+
+.aios-cmd-input::placeholder {
+  color: var(--aios-text-secondary);
+}
+
+.aios-cmd-results {
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.aios-cmd-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background var(--aios-transition);
+  font-size: 14px;
+  color: var(--aios-text-primary);
+}
+
+.aios-cmd-item:hover,
+.aios-cmd-item.selected {
+  background: var(--aios-bg-tertiary);
+}
+
+.aios-cmd-item-icon {
+  font-size: 18px;
+}
+
+/* --- Empty States --- */
+.aios-empty {
+  text-align: center;
+  padding: 32px;
+  color: var(--aios-text-secondary);
+  font-size: 13px;
+}
+
+/* --- Hidden --- */
+.aios-hidden {
+  display: none !important;
+}
+
+/* --- Scrollbar --- */
+#aios-root *::-webkit-scrollbar {
+  width: 6px;
+}
+
+#aios-root *::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#aios-root *::-webkit-scrollbar-thumb {
+  background: var(--aios-bg-hover);
+  border-radius: 3px;
+}
+
+#aios-root *::-webkit-scrollbar-thumb:hover {
+  background: var(--aios-text-secondary);
+}
+
+/* --- List Number --- */
+.aios-list-num {
+  color: var(--aios-accent);
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+/* --- Responsive --- */
+@media (max-width: 1200px) {
+  :root {
+    --aios-ai-panel-width: 320px;
+  }
+}
+
+@media (max-width: 900px) {
+  #aios-ai-panel {
+    display: none !important;
+  }
+  .aios-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .aios-kanban {
+    grid-template-columns: 1fr;
+  }
+}

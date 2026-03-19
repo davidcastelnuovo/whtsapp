@@ -1,0 +1,54 @@
+{
+  "manifest_version": 3,
+  "name": "WhatsApp AIOS",
+  "version": "1.0.0",
+  "description": "הפוך את WhatsApp Web למערכת הפעלה מבוססת AI",
+  "default_locale": "he",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": [
+    "storage",
+    "alarms",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "*://web.whatsapp.com/*"
+  ],
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://web.whatsapp.com/*"],
+      "js": [
+        "lib/utils.js",
+        "lib/storage.js",
+        "lib/claude-api.js",
+        "content/whatsapp-reader.js",
+        "content/whatsapp-actions.js",
+        "content/observer.js",
+        "content/ui/sidebar.js",
+        "content/ui/dashboard.js",
+        "content/ui/ai-panel.js",
+        "content/ui/automation-panel.js",
+        "content/ui/tasks-panel.js",
+        "content/ui/analytics-panel.js",
+        "content/ui/settings-panel.js",
+        "content/main.js"
+      ],
+      "css": ["styles/aios.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png"
+    }
+  },
+  "options_page": "options/options.html"
+}
