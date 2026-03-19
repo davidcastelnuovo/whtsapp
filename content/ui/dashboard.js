@@ -59,10 +59,15 @@ AIOS.dashboard = {
     mainContent.id = 'aios-main-content';
     mainContent.style.display = 'none';
 
+    // Create content row (horizontal layout for panels below topbar)
+    const contentRow = document.createElement('div');
+    contentRow.id = 'aios-content-row';
+    contentRow.appendChild(waContainer);
+    contentRow.appendChild(aiPanel);
+    contentRow.appendChild(mainContent);
+
     // Assemble layout
-    mainArea.appendChild(waContainer);
-    mainArea.appendChild(aiPanel);
-    mainArea.appendChild(mainContent);
+    mainArea.appendChild(contentRow);
 
     root.appendChild(sidebar);
     root.appendChild(mainArea);
@@ -116,22 +121,26 @@ AIOS.dashboard = {
   },
 
   async _updateStats() {
-    const unreadEl = document.getElementById('aios-unread-count');
-    const autoEl = document.getElementById('aios-auto-count');
-    const tasksEl = document.getElementById('aios-tasks-count');
+    try {
+      const unreadEl = document.getElementById('aios-unread-count');
+      const autoEl = document.getElementById('aios-auto-count');
+      const tasksEl = document.getElementById('aios-tasks-count');
 
-    if (unreadEl) {
-      unreadEl.textContent = AIOS.reader.getUnreadCount();
-    }
+      if (unreadEl && AIOS.reader) {
+        unreadEl.textContent = AIOS.reader.getUnreadCount();
+      }
 
-    if (autoEl) {
-      const rules = await AIOS.storage.getAutomationRules();
-      autoEl.textContent = rules.filter(r => r.enabled).length;
-    }
+      if (autoEl) {
+        const rules = await AIOS.storage.getAutomationRules();
+        autoEl.textContent = rules.filter(r => r.enabled).length;
+      }
 
-    if (tasksEl) {
-      const tasks = await AIOS.storage.getTasks();
-      tasksEl.textContent = tasks.filter(t => t.status !== 'done').length;
+      if (tasksEl) {
+        const tasks = await AIOS.storage.getTasks();
+        tasksEl.textContent = tasks.filter(t => t.status !== 'done').length;
+      }
+    } catch (e) {
+      console.warn('[AIOS] Error updating stats:', e.message);
     }
   },
 
