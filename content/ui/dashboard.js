@@ -10,8 +10,24 @@ AIOS.dashboard = {
   },
 
   _createLayout() {
-    const app = document.getElementById('app');
-    if (!app) return;
+    // Try multiple ways to find WhatsApp's root element
+    const app = document.getElementById('app') || document.querySelector('[id="app"]');
+    if (!app) {
+      console.error('[AIOS] Could not find WhatsApp #app element');
+      return;
+    }
+
+    const appParent = app.parentElement;
+    if (!appParent) {
+      console.error('[AIOS] #app has no parent element');
+      return;
+    }
+
+    // Prevent double initialization
+    if (document.getElementById('aios-root')) {
+      console.warn('[AIOS] Dashboard already initialized');
+      return;
+    }
 
     // Create AIOS root wrapper
     const root = document.createElement('div');
@@ -29,7 +45,6 @@ AIOS.dashboard = {
     waContainer.id = 'aios-whatsapp-container';
 
     // Move WhatsApp app into our container
-    const appParent = app.parentElement;
     waContainer.appendChild(app);
 
     // AI side panel (right side)
@@ -60,6 +75,8 @@ AIOS.dashboard = {
 
     // Top bar with quick stats
     this._createTopBar(mainArea);
+
+    console.log('[AIOS] Layout created successfully');
   },
 
   _createTopBar(parent) {
