@@ -5,6 +5,7 @@ AIOS.settingsPanel = {
   async render(container) {
     const settings = await AIOS.storage.getSettings();
     const apiKey = await AIOS.storage.getApiKey();
+    const fbConfig = await AIOS.storage.getFirebaseConfig() || {};
 
     container.innerHTML = `
       <div class="aios-panel-full">
@@ -63,6 +64,19 @@ AIOS.settingsPanel = {
         </div>
 
         <div class="aios-settings-section">
+          <h3>Firebase (תזמון פגישות)</h3>
+          <div class="aios-setting-desc" style="margin-bottom: 12px;">
+            נדרש לשימוש במערכת תיאום הפגישות. צור פרויקט חינמי ב-Firebase Console.
+          </div>
+          <div class="aios-form-field">
+            <label>Database URL</label>
+            <input type="text" id="aios-fb-dburl" value="${fbConfig.databaseURL ? AIOS.utils.escapeHtml(fbConfig.databaseURL) : ''}" placeholder="https://your-project-default-rtdb.firebaseio.com" dir="ltr">
+          </div>
+          <button class="aios-btn-primary" id="aios-save-firebase">שמור הגדרות Firebase</button>
+          <span class="aios-msg" id="aios-fb-msg"></span>
+        </div>
+
+        <div class="aios-settings-section">
           <h3>נתונים</h3>
           <div class="aios-settings-buttons">
             <button class="aios-btn-secondary" id="aios-export-data">📤 ייצא נתונים</button>
@@ -108,6 +122,23 @@ AIOS.settingsPanel = {
         if (!key) return;
         await AIOS.storage.setApiKey(key);
         const msg = document.getElementById('aios-key-msg');
+        if (msg) {
+          msg.textContent = 'נשמר!';
+          msg.style.color = '#00a884';
+          setTimeout(() => { msg.textContent = ''; }, 2000);
+        }
+      });
+    }
+
+    // Save Firebase config
+    const saveFbBtn = document.getElementById('aios-save-firebase');
+    if (saveFbBtn) {
+      saveFbBtn.addEventListener('click', async () => {
+        const databaseURL = document.getElementById('aios-fb-dburl').value.trim();
+        if (!databaseURL) return;
+        await AIOS.storage.setFirebaseConfig({ databaseURL });
+        if (AIOS.firebase) await AIOS.firebase.init();
+        const msg = document.getElementById('aios-fb-msg');
         if (msg) {
           msg.textContent = 'נשמר!';
           msg.style.color = '#00a884';

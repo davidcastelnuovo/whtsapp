@@ -10,6 +10,7 @@ AIOS.sidebar = {
     { id: 'automation', icon: '⚡', label: 'אוטומציות' },
     { id: 'analytics', icon: '📊', label: 'ניתוחים' },
     { id: 'tasks', icon: '✅', label: 'משימות' },
+    { id: 'scheduler', icon: '📅', label: 'תזמון' },
     { id: 'settings', icon: '⚙️', label: 'הגדרות' }
   ],
 
@@ -107,6 +108,14 @@ AIOS.sidebar = {
         if (mainContent) {
           mainContent.style.display = 'flex';
           if (AIOS.tasksPanel) AIOS.tasksPanel.render(mainContent);
+        }
+        break;
+      case 'scheduler':
+        if (app) app.style.display = 'none';
+        if (aiPanel) aiPanel.style.display = 'none';
+        if (mainContent) {
+          mainContent.style.display = 'flex';
+          if (AIOS.schedulerPanel) AIOS.schedulerPanel.render(mainContent);
         }
         break;
       case 'settings':

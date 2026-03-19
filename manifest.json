@@ -27,6 +27,7 @@
         "lib/utils.js",
         "lib/storage.js",
         "lib/claude-api.js",
+        "lib/firebase-config.js",
         "content/whatsapp-reader.js",
         "content/whatsapp-actions.js",
         "content/observer.js",
@@ -36,6 +37,7 @@
         "content/ui/automation-panel.js",
         "content/ui/tasks-panel.js",
         "content/ui/analytics-panel.js",
+        "content/ui/scheduler-panel.js",
         "content/ui/settings-panel.js",
         "content/main.js"
       ],
