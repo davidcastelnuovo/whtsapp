@@ -98,7 +98,13 @@ AIOS.aiPanel = {
   async quickAction(action) {
     const messages = AIOS.reader.getMessages();
     if (messages.length === 0) {
-      this._addMessage('system', 'פתח שיחה כדי שאוכל לנתח אותה.');
+      const contact = AIOS.reader.getContactInfo();
+      if (contact) {
+        this._addMessage('system', `שיחה עם ${contact.name} פתוחה, אבל לא הצלחתי לקרוא הודעות. בדוק את הקונסול (F12) למידע נוסף.`);
+        AIOS.reader.debugSelectors();
+      } else {
+        this._addMessage('system', 'פתח שיחה כדי שאוכל לנתח אותה.');
+      }
       return;
     }
 
@@ -137,11 +143,19 @@ AIOS.aiPanel = {
 
     this._addMessage('user', text);
 
-    // Build context from current conversation
+    // Build context from current conversation - always include contact info
     const messages = AIOS.reader.getMessages();
-    const context = messages.length > 0
-      ? messages.map(m => `${m.sender}: ${m.text}`).join('\n')
-      : '';
+    const contact = AIOS.reader.getContactInfo();
+
+    let context = '';
+    if (contact) {
+      context += `שיחה פעילה עם: ${contact.name}`;
+      if (contact.status) context += ` (${contact.status})`;
+      context += '\n';
+    }
+    if (messages.length > 0) {
+      context += messages.map(m => `${m.sender}: ${m.text}`).join('\n');
+    }
 
     await this._callAI(() => AIOS.claude.ask(text, context));
   },

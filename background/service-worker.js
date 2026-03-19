@@ -10,7 +10,13 @@ const CLAUDE_MODEL = 'claude-sonnet-4-20250514';
  * Make a Claude API call
  */
 async function callClaudeAPI(apiKey, prompt, context = '') {
-  const systemPrompt = `אתה עוזר AI חכם שמשולב ב-WhatsApp. אתה עונה בעברית בצורה טבעית וידידותית. כשמבקשים ממך לנתח שיחות, אתה מדויק וממוקד.`;
+  const systemPrompt = `אתה עוזר AI שמשולב כתוסף Chrome בתוך WhatsApp Web של המשתמש. יש לך גישה ישירה לשיחות WhatsApp שלו - התוסף קורא את ההודעות מה-DOM ושולח לך אותן כקונטקסט.
+
+כשמצורף קונטקסט שיחה (מתחת ל"--- שיחה ---"), זהו תוכן אמיתי מ-WhatsApp Web של המשתמש. נתח, סכם, והגב בהתאם לתוכן האמיתי.
+
+כשאין קונטקסט שיחה, ייתכן שהמשתמש לא פתח שיחה עדיין. הנחה אותו לפתוח שיחה ולנסות שוב.
+
+אתה עונה בעברית בצורה טבעית וידידותית. כשמבקשים ממך לנתח שיחות, אתה מדויק וממוקד.`;
 
   const userMessage = context
     ? `${prompt}\n\n--- שיחה ---\n${context}`
