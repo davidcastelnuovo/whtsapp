@@ -80,6 +80,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       .catch(error => sendResponse({ error: error.message }));
     return true;
   }
+
+  if (message.type === 'SCHEDULER_CREATE_EVENT') {
+    handleCreateCalendarEvent(message.payload)
+      .then(result => sendResponse({ result }))
+      .catch(error => sendResponse({ error: error.message }));
+    return true;
+  }
 });
 
 async function handleClaudeCall({ prompt, context }) {
@@ -152,6 +159,40 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
   msg.status = 'sent';
   await chrome.storage.local.set({ scheduled_messages: messages });
 });
+
+/**
+ * Calendar event creation for meeting scheduler
+ * Stores event details for the extension to process via MCP tools
+ */
+async function handleCreateCalendarEvent({ title, startDateTime, endDateTime, organizerEmail, attendeeEmails, sessionId }) {
+  // Store the pending event for the content script to pick up and process via MCP
+  const event = {
+    id: sessionId,
+    title,
+    startDateTime,
+    endDateTime,
+    organizerEmail,
+    attendeeEmails,
+    status: 'pending',
+    createdAt: Date.now()
+  };
+
+  const result = await chrome.storage.local.get('scheduler_pending_events');
+  const events = result.scheduler_pending_events || [];
+  events.push(event);
+  await chrome.storage.local.set({ scheduler_pending_events: events });
+
+  // Notify content script to process the event via MCP tools
+  const tabs = await chrome.tabs.query({ url: '*://web.whatsapp.com/*' });
+  if (tabs.length > 0) {
+    chrome.tabs.sendMessage(tabs[0].id, {
+      type: 'SCHEDULER_PROCESS_EVENT',
+      payload: event
+    });
+  }
+
+  return { status: 'queued', event };
+}
 
 /**
  * Extension install handler
