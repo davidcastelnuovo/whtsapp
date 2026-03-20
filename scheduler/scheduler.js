@@ -177,7 +177,7 @@
         </div>
         <div class="status-bar">
           <span>👥 ${Object.keys(session.participants || {}).length}/${session.participantCount} \u05de\u05e9\u05ea\u05ea\u05e4\u05d9\u05dd</span>
-          <span>📅 ${session.dateRange.start} - ${session.dateRange.end}</span>
+          <span>📅 ${session.availableSlots ? Object.keys(session.availableSlots).length + ' \u05d7\u05dc\u05d5\u05e0\u05d5\u05ea \u05d6\u05de\u05d9\u05e0\u05d9\u05dd' : session.dateRange.start + ' - ' + session.dateRange.end}</span>
           <span>⏱️ ${session.slotDurationMinutes} \u05d3\u05e7\u05d5\u05ea</span>
         </div>
         <div class="join-form">
@@ -197,8 +197,15 @@
   function renderScheduler(session) {
     const participants = session.participants || {};
     const participantEntries = Object.entries(participants);
-    const dates = getDateRange(session.dateRange.start, session.dateRange.end);
-    const slots = getTimeSlots(session.timeRange.start, session.timeRange.end, session.slotDurationMinutes);
+    let dates, slots;
+    if (session.availableSlots) {
+      const slotKeys = Object.keys(session.availableSlots).sort();
+      dates = [...new Set(slotKeys.map(k => k.split('_')[0]))].sort();
+      slots = [...new Set(slotKeys.map(k => k.split('_')[1]))].sort();
+    } else {
+      dates = getDateRange(session.dateRange.start, session.dateRange.end);
+      slots = getTimeSlots(session.timeRange.start, session.timeRange.end, session.slotDurationMinutes);
+    }
 
     // Find consensus
     const consensusSlots = findConsensus(participants, session.participantCount);
@@ -254,6 +261,10 @@
               <div class="grid-time">${time}</div>
               ${visibleDates.map(date => {
                 const slotKey = `${date}_${time}`;
+                const isAvailable = !session.availableSlots || session.availableSlots[slotKey];
+                if (!isAvailable) {
+                  return `<div class="grid-cell grid-cell-disabled" data-slot="${slotKey}"></div>`;
+                }
                 const isMine = state.mySlots[slotKey];
                 const others = participantEntries.filter(([id, p]) => id !== state.participantId && p.slots && p.slots[slotKey]);
                 const totalCount = (isMine ? 1 : 0) + others.length;
@@ -372,6 +383,7 @@
     // Cell click - toggle slot
     document.querySelectorAll('.grid-cell').forEach(cell => {
       cell.addEventListener('click', async () => {
+        if (cell.classList.contains('grid-cell-disabled')) return;
         const slotKey = cell.dataset.slot;
         if (!slotKey) return;
 

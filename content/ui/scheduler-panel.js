@@ -6,6 +6,8 @@ AIOS.schedulerPanel = {
   _currentView: 'list',
   _currentSessionId: null,
   _listener: null,
+  _selectedSlots: {},
+  _currentWeekStart: null,
 
   async render(container) {
     if (this._currentView === 'detail' && this._currentSessionId) {
@@ -45,7 +47,7 @@ AIOS.schedulerPanel = {
 
         <!-- Create Session Modal -->
         <div class="aios-modal aios-hidden" id="aios-session-modal">
-          <div class="aios-modal-content">
+          <div class="aios-modal-content aios-modal-wide">
             <h3>פגישה חדשה</h3>
             <div class="aios-form-field">
               <label>כותרת הפגישה</label>
@@ -55,36 +57,28 @@ AIOS.schedulerPanel = {
               <label>אימייל מארגן</label>
               <input type="email" id="aios-session-email" placeholder="your@email.com" dir="ltr">
             </div>
-            <div class="aios-form-field">
-              <label>מספר משתתפים (לא כולל מארגן)</label>
-              <input type="number" id="aios-session-count" min="1" max="20" value="2">
-            </div>
             <div class="aios-form-row">
               <div class="aios-form-field">
-                <label>מתאריך</label>
-                <input type="date" id="aios-session-date-start" dir="ltr">
+                <label>מספר משתתפים (לא כולל מארגן)</label>
+                <input type="number" id="aios-session-count" min="1" max="20" value="2">
               </div>
               <div class="aios-form-field">
-                <label>עד תאריך</label>
-                <input type="date" id="aios-session-date-end" dir="ltr">
-              </div>
-            </div>
-            <div class="aios-form-row">
-              <div class="aios-form-field">
-                <label>משעה</label>
-                <input type="time" id="aios-session-time-start" value="09:00" dir="ltr">
-              </div>
-              <div class="aios-form-field">
-                <label>עד שעה</label>
-                <input type="time" id="aios-session-time-end" value="18:00" dir="ltr">
+                <label>משך חלון זמן</label>
+                <select id="aios-session-duration">
+                  <option value="30" selected>30 דקות</option>
+                  <option value="60">60 דקות</option>
+                </select>
               </div>
             </div>
             <div class="aios-form-field">
-              <label>משך חלון זמן</label>
-              <select id="aios-session-duration">
-                <option value="30" selected>30 דקות</option>
-                <option value="60">60 דקות</option>
-              </select>
+              <label>בחרו חלונות זמן פנויים</label>
+              <div class="aios-week-nav">
+                <button type="button" id="aios-week-next">&#8594;</button>
+                <span class="aios-week-label" id="aios-week-label"></span>
+                <button type="button" id="aios-week-prev">&#8592;</button>
+              </div>
+              <div id="aios-week-calendar-container"></div>
+              <div class="aios-week-slot-count" id="aios-slot-count">0 חלונות נבחרו</div>
             </div>
             <div class="aios-modal-actions">
               <button class="aios-btn-secondary" id="aios-session-cancel">ביטול</button>
@@ -115,7 +109,7 @@ AIOS.schedulerPanel = {
         </div>
         <div class="aios-scheduler-card-info">
           <span>👥 ${participantCount}/${total} משתתפים</span>
-          <span>📅 ${session.dateRange.start} - ${session.dateRange.end}</span>
+          <span>📅 ${session.availableSlots ? Object.keys(session.availableSlots).length + ' חלונות' : session.dateRange.start + ' - ' + session.dateRange.end}</span>
         </div>
         ${session.consensusSlot ? `
           <div class="aios-scheduler-consensus">
@@ -145,18 +139,44 @@ AIOS.schedulerPanel = {
     const createBtn = document.getElementById('aios-create-session');
     if (createBtn) {
       createBtn.addEventListener('click', () => {
-        // Set default dates (tomorrow to +7 days)
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        const nextWeek = new Date();
-        nextWeek.setDate(nextWeek.getDate() + 8);
+        // Reset state
+        this._selectedSlots = {};
+        this._isDragging = false;
+        this._dragMode = true;
 
-        const startInput = document.getElementById('aios-session-date-start');
-        const endInput = document.getElementById('aios-session-date-end');
-        if (startInput) startInput.value = tomorrow.toISOString().slice(0, 10);
-        if (endInput) endInput.value = nextWeek.toISOString().slice(0, 10);
+        // Set week start to next Sunday (or today if it's Sunday)
+        const today = new Date();
+        const dayOfWeek = today.getDay(); // 0=Sunday
+        const daysUntilSunday = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
+        this._currentWeekStart = new Date(today);
+        this._currentWeekStart.setDate(today.getDate() + daysUntilSunday);
 
         document.getElementById('aios-session-modal').classList.remove('aios-hidden');
+
+        // Render calendar
+        this._renderWeekCalendar();
+
+        // Week navigation
+        const prevBtn = document.getElementById('aios-week-prev');
+        const nextBtn = document.getElementById('aios-week-next');
+        if (prevBtn) {
+          prevBtn.onclick = () => {
+            this._currentWeekStart.setDate(this._currentWeekStart.getDate() - 7);
+            this._renderWeekCalendar();
+          };
+        }
+        if (nextBtn) {
+          nextBtn.onclick = () => {
+            this._currentWeekStart.setDate(this._currentWeekStart.getDate() + 7);
+            this._renderWeekCalendar();
+          };
+        }
+
+        // Duration change re-renders calendar
+        const durationSelect = document.getElementById('aios-session-duration');
+        if (durationSelect) {
+          durationSelect.onchange = () => this._renderWeekCalendar();
+        }
       });
     }
 
@@ -175,16 +195,21 @@ AIOS.schedulerPanel = {
         const title = document.getElementById('aios-session-title').value.trim();
         const email = document.getElementById('aios-session-email').value.trim();
         const count = parseInt(document.getElementById('aios-session-count').value) || 2;
-        const dateStart = document.getElementById('aios-session-date-start').value;
-        const dateEnd = document.getElementById('aios-session-date-end').value;
-        const timeStart = document.getElementById('aios-session-time-start').value;
-        const timeEnd = document.getElementById('aios-session-time-end').value;
+        const selectedSlots = { ...this._selectedSlots };
+        const slotKeys = Object.keys(selectedSlots).sort();
         const duration = parseInt(document.getElementById('aios-session-duration').value) || 30;
 
-        if (!title || !email || !dateStart || !dateEnd) {
-          alert('נא למלא את כל השדות');
+        if (!title || !email || slotKeys.length === 0) {
+          alert('נא למלא כותרת, אימייל ולבחור לפחות חלון זמן אחד');
           return;
         }
+
+        const dates = [...new Set(slotKeys.map(k => k.split('_')[0]))].sort();
+        const times = [...new Set(slotKeys.map(k => k.split('_')[1]))].sort();
+        const dateStart = dates[0];
+        const dateEnd = dates[dates.length - 1];
+        const timeStart = times[0];
+        const timeEnd = times[times.length - 1];
 
         saveBtn.disabled = true;
         saveBtn.textContent = 'יוצר...';
@@ -199,6 +224,7 @@ AIOS.schedulerPanel = {
             title,
             organizerEmail: email,
             participantCount: count,
+            availableSlots: selectedSlots,
             dateRange: { start: dateStart, end: dateEnd },
             timeRange: { start: timeStart, end: timeEnd },
             slotDurationMinutes: duration,
@@ -324,8 +350,15 @@ AIOS.schedulerPanel = {
     const colors = ['#00a884', '#5b72f0', '#f0a05b', '#f05b8e', '#8e5bf0', '#5bf0c8'];
 
     // Build availability grid
-    const dates = this._getDateRange(session.dateRange.start, session.dateRange.end);
-    const slots = this._getTimeSlots(session.timeRange.start, session.timeRange.end, session.slotDurationMinutes);
+    let dates, slots;
+    if (session.availableSlots) {
+      const slotKeys = Object.keys(session.availableSlots).sort();
+      dates = [...new Set(slotKeys.map(k => k.split('_')[0]))].sort();
+      slots = [...new Set(slotKeys.map(k => k.split('_')[1]))].sort();
+    } else {
+      dates = this._getDateRange(session.dateRange.start, session.dateRange.end);
+      slots = this._getTimeSlots(session.timeRange.start, session.timeRange.end, session.slotDurationMinutes);
+    }
 
     // Find consensus slots
     const consensusSlots = this._findConsensusSlots(participants, session.participantCount);
@@ -342,7 +375,7 @@ AIOS.schedulerPanel = {
 
         <div class="aios-scheduler-detail-info">
           <span>👥 ${participantList.length}/${session.participantCount} משתתפים</span>
-          <span>📅 ${session.dateRange.start} - ${session.dateRange.end}</span>
+          <span>📅 ${session.availableSlots ? Object.keys(session.availableSlots).length + ' חלונות' : session.dateRange.start + ' - ' + session.dateRange.end}</span>
           <span>⏱️ ${session.slotDurationMinutes} דקות</span>
         </div>
 
@@ -374,6 +407,10 @@ AIOS.schedulerPanel = {
               <div class="aios-scheduler-grid-time">${time}</div>
               ${dates.map(date => {
                 const slotKey = `${date}_${time}`;
+                const isAvailable = !session.availableSlots || session.availableSlots[slotKey];
+                if (!isAvailable) {
+                  return `<div class="aios-scheduler-grid-cell aios-scheduler-grid-cell-disabled" data-slot="${slotKey}"></div>`;
+                }
                 const selectedBy = participantList.filter(([id, p]) => p.slots && p.slots[slotKey]);
                 const count = selectedBy.length;
                 const isConsensus = consensusSlots.includes(slotKey);
@@ -594,5 +631,127 @@ AIOS.schedulerPanel = {
     const d = new Date(dateStr);
     const days = ['א\'', 'ב\'', 'ג\'', 'ד\'', 'ה\'', 'ו\'', 'ש\''];
     return `${days[d.getDay()]}<br>${d.getDate()}/${d.getMonth() + 1}`;
+  },
+
+  _renderWeekCalendar() {
+    const container = document.getElementById('aios-week-calendar-container');
+    const label = document.getElementById('aios-week-label');
+    if (!container || !this._currentWeekStart) return;
+
+    const duration = parseInt(document.getElementById('aios-session-duration')?.value) || 30;
+    const weekStart = new Date(this._currentWeekStart);
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekEnd.getDate() + 6);
+
+    // Update label
+    if (label) {
+      label.textContent = `${weekStart.getDate()}/${weekStart.getMonth() + 1} - ${weekEnd.getDate()}/${weekEnd.getMonth() + 1}`;
+    }
+
+    const days = ['א\'', 'ב\'', 'ג\'', 'ד\'', 'ה\'', 'ו\'', 'ש\''];
+    const dates = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(weekStart);
+      d.setDate(d.getDate() + i);
+      dates.push(d.toISOString().slice(0, 10));
+    }
+
+    // Generate time slots from 08:00 to 20:00
+    const slots = [];
+    let totalMin = 8 * 60;
+    const endMin = 20 * 60;
+    while (totalMin < endMin) {
+      const h = Math.floor(totalMin / 60).toString().padStart(2, '0');
+      const m = (totalMin % 60).toString().padStart(2, '0');
+      slots.push(`${h}:${m}`);
+      totalMin += duration;
+    }
+
+    let html = `<div class="aios-week-calendar" style="grid-template-columns: 50px repeat(7, 1fr);">`;
+
+    // Headers
+    html += `<div class="aios-week-header"></div>`;
+    dates.forEach((dateStr, i) => {
+      const d = new Date(dateStr);
+      html += `<div class="aios-week-header">${days[d.getDay()]}<br>${d.getDate()}/${d.getMonth() + 1}</div>`;
+    });
+
+    // Time rows
+    slots.forEach(time => {
+      html += `<div class="aios-week-time">${time}</div>`;
+      dates.forEach(date => {
+        const slotKey = `${date}_${time}`;
+        const isSelected = this._selectedSlots[slotKey];
+        // Don't allow selecting past dates
+        const slotDate = new Date(date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const isPast = slotDate < today;
+        html += `<div class="aios-week-cell ${isSelected ? 'aios-week-cell-selected' : ''} ${isPast ? 'aios-week-cell-past' : ''}" data-slot="${slotKey}">${isSelected ? '\u2713' : ''}</div>`;
+      });
+    });
+
+    html += `</div>`;
+    container.innerHTML = html;
+
+    // Update slot count
+    this._updateSlotCount();
+
+    // Setup cell click events
+    container.querySelectorAll('.aios-week-cell:not(.aios-week-cell-past)').forEach(cell => {
+      cell.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        const slotKey = cell.dataset.slot;
+        if (!slotKey) return;
+        // Determine drag mode: if cell is selected, we're deselecting; otherwise selecting
+        this._isDragging = true;
+        this._dragMode = !this._selectedSlots[slotKey];
+        this._toggleSlot(slotKey, this._dragMode);
+        this._updateCellVisual(cell, this._dragMode);
+      });
+
+      cell.addEventListener('mouseenter', () => {
+        if (!this._isDragging) return;
+        const slotKey = cell.dataset.slot;
+        if (!slotKey) return;
+        this._toggleSlot(slotKey, this._dragMode);
+        this._updateCellVisual(cell, this._dragMode);
+      });
+    });
+
+    // End drag on mouseup anywhere
+    const mouseUpHandler = () => {
+      this._isDragging = false;
+      document.removeEventListener('mouseup', mouseUpHandler);
+    };
+    document.addEventListener('mouseup', mouseUpHandler);
+  },
+
+  _toggleSlot(slotKey, select) {
+    if (select) {
+      this._selectedSlots[slotKey] = true;
+    } else {
+      delete this._selectedSlots[slotKey];
+    }
+    this._updateSlotCount();
+  },
+
+  _updateCellVisual(cell, selected) {
+    if (selected) {
+      cell.classList.add('aios-week-cell-selected');
+      cell.textContent = '\u2713';
+    } else {
+      cell.classList.remove('aios-week-cell-selected');
+      cell.textContent = '';
+    }
+  },
+
+  _updateSlotCount() {
+    const countEl = document.getElementById('aios-slot-count');
+    if (countEl) {
+      const count = Object.keys(this._selectedSlots).length;
+      countEl.textContent = `${count} חלונות נבחרו`;
+      countEl.style.color = count > 0 ? 'var(--aios-accent)' : 'var(--aios-text-secondary)';
+    }
   }
 };

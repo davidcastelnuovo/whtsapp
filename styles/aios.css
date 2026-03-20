@@ -33,6 +33,9 @@ body.aios-active #app {
   bottom: 0 !important;
   width: auto !important;
   height: auto !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
   z-index: 1 !important;
 }
 
@@ -1456,6 +1459,113 @@ kbd {
   height: 12px;
   border-radius: 6px;
   background: linear-gradient(to right, var(--aios-bg-tertiary), var(--aios-accent));
+}
+
+/* --- Weekly Calendar Picker (Create Modal) --- */
+.aios-modal-content.aios-modal-wide {
+  width: 680px;
+  max-width: 95vw;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.aios-week-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.aios-week-nav button {
+  background: var(--aios-bg-tertiary);
+  border: 1px solid var(--aios-border);
+  color: var(--aios-text-primary);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background var(--aios-transition);
+}
+
+.aios-week-nav button:hover {
+  background: var(--aios-bg-hover);
+}
+
+.aios-week-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--aios-text-primary);
+  min-width: 120px;
+  text-align: center;
+}
+
+.aios-week-calendar {
+  display: grid;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+
+.aios-week-cell {
+  background: var(--aios-bg-tertiary);
+  border-radius: 4px;
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  cursor: pointer;
+  transition: all var(--aios-transition);
+  user-select: none;
+  color: var(--aios-text-secondary);
+}
+
+.aios-week-cell:hover {
+  background: var(--aios-bg-hover);
+}
+
+.aios-week-cell-selected {
+  background: var(--aios-accent) !important;
+  color: var(--aios-bg-primary);
+  font-weight: 600;
+}
+
+.aios-week-cell-past {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.aios-week-header {
+  text-align: center;
+  font-size: 11px;
+  color: var(--aios-text-secondary);
+  padding: 4px 2px;
+  font-weight: 600;
+}
+
+.aios-week-time {
+  font-size: 10px;
+  color: var(--aios-text-secondary);
+  padding: 2px 4px;
+  text-align: left;
+  direction: ltr;
+  display: flex;
+  align-items: center;
+}
+
+.aios-week-slot-count {
+  text-align: center;
+  font-size: 12px;
+  color: var(--aios-text-secondary);
+  margin-top: 4px;
+}
+
+/* Disabled cells in detail/participant grids */
+.aios-scheduler-grid-cell-disabled {
+  background: var(--aios-bg-primary) !important;
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 
 /* --- Responsive --- */
