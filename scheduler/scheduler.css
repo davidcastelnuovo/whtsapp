@@ -253,6 +253,13 @@ body {
   box-shadow: 0 0 8px rgba(0, 168, 132, 0.4);
 }
 
+.grid-cell-disabled {
+  background: var(--bg-primary) !important;
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .cell-count {
   font-size: 10px;
   font-weight: 600;
